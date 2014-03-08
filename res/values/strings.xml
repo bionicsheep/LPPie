@@ -1,0 +1,18 @@
+<resources>
+
+    <string name="app_name">LPPie</string>
+    <string name="action_settings">Settings</string>
+    
+    <string name="pref_service_setting">Service Setting</string>
+    <string name="service_checkbox">Enable Pie</string>
+    <string name="notification_link">Notification Service</string>
+    
+    <string name="pref_appearance_setting">Appearance</string>
+    <string name="color_link">Color</string>
+    <string name="behavior_link">Behavior</string>
+	<string name="sizing_link">Size and Gravity</string>
+	
+	<string name="full_version_setting">Upgrade to Pro</string>
+	<string name="upgrade_link">Play Store</string>
+	
+</resources>

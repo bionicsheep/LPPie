@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/pref_service_setting" >
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:id="@+id/service_checkbox"
+            android:key="service_checkbox"
+            android:title="@string/service_checkbox" >
+        </CheckBoxPreference>
+        <Preference
+            android:title="@string/notification_link" >
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_appearance_setting" >
+        <Preference
+            android:title="@string/color_link" >
+        </Preference>
+        <Preference
+            android:title="@string/behavior_link" >
+        </Preference>
+        <Preference
+            android:title="@string/sizing_link" >
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/full_version_setting" >
+        <Preference
+            android:title="@string/upgrade_link" >
+        </Preference>
+    </PreferenceCategory>
+
+</PreferenceScreen>
