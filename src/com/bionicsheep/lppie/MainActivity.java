@@ -42,16 +42,20 @@ public class MainActivity extends PreferenceActivity {
 		service_checkbox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				startPie((Boolean) newValue);
+				//hacky wacky waving inflatable code man
+				if((Boolean) newValue == true){
+					finish();
+				}
 				return true;
 			}
 		});
 		startPie(sp.getBoolean("service_status", false));
 	}
 
-	public void startPie(boolean started){
+	public void startPie(boolean state){
 		editor = sp.edit();
 
-		if (started) {
+		if (state == true) {
 			startService(new Intent(currentActivity, TriggerService.class));
 			editor.putBoolean("service_status", true);
 			toast = Toast.makeText(currentActivity, "Service Running", Toast.LENGTH_SHORT);
