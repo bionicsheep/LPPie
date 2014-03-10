@@ -37,7 +37,7 @@ public class TriggerService extends Service{
 		detectorArea.setImageResource(R.drawable.detector);
 		detectorArea.setOnTouchListener(triggerTouchListener);
 		detectorArea.setScaleType(ImageView.ScaleType.FIT_XY);
-		
+
 		wm = (WindowManager) getSystemService(WINDOW_SERVICE);		
 		Display display = wm.getDefaultDisplay();
 		dwidth = display.getWidth() / 2;
@@ -50,9 +50,9 @@ public class TriggerService extends Service{
 				WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
 				PixelFormat.TRANSLUCENT
 				);
-	
+
 		params.gravity = Gravity.CENTER | Gravity.BOTTOM;
-		
+
 		wm.addView(detectorArea, params);
 	}
 
@@ -60,11 +60,6 @@ public class TriggerService extends Service{
 	public IBinder onBind(Intent intent) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public void onDestroy(){
-		super.onDestroy();
 	}
 
 	private OnTouchListener triggerTouchListener = new OnTouchListener(){
@@ -78,6 +73,15 @@ public class TriggerService extends Service{
 			}
 			return true;
 		}
-
 	};
+
+	@Override
+	public void onDestroy(){
+		if(detectorArea != null) { 
+			if(detectorArea != null){
+				wm.removeView(detectorArea);
+			}
+		}
+		super.onDestroy();
+	}
 }
