@@ -2,6 +2,7 @@ package com.bionicsheep.lppie;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Handler;
@@ -18,21 +19,26 @@ import android.widget.Toast;
 
 public class TriggerService extends Service{
 
-	ImageView detectorArea, background, pieOutline, temp;
+	ImageView detectorArea, background;
 	WindowManager wm;
 	WindowManager.LayoutParams tparams, bparams, pparams;
 	int twidth, theight;
-	int bwidth, bheight;
 	int pwidth, pheight;
-	Toast toast;
-	boolean active = false;
+	int bwidth, bheight;
+	
+	Display display;
+	int displayWidth, displayHeight;
+	
 	boolean scanning = true;
-	Service currentActivity = this;
 	int dragY;
 	int shadow_threshold;
-	Display display;
 
+	Service currentActivity = this;
 	Handler handler;
+	Toast toast;
+	
+	Canvas canvas;
+	PieControls pieView;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -41,16 +47,21 @@ public class TriggerService extends Service{
 		return START_STICKY;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(){
 		detectorArea = new ImageView(this);
 		background = new ImageView(this);
-		pieOutline = new ImageView(this);
 
 		handler = new Handler();
 
 		wm = (WindowManager) getSystemService(WINDOW_SERVICE);		
 		display = wm.getDefaultDisplay();
+
+		displayWidth = display.getWidth();
+		displayHeight = display.getHeight();
+		
+		pieView = new PieControls(this);
 
 		startTrigger();
 	}
@@ -65,15 +76,13 @@ public class TriggerService extends Service{
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			if(event.getAction() == MotionEvent.ACTION_DOWN){
-				active = true;
 				Log.d("pie:", "bound");
 				startBackground();
 				startPie();
 			}else if(event.getAction() == MotionEvent.ACTION_UP){
-				active = false;
-				wm.removeView(background);
-				wm.removeView(pieOutline);
 				scanning = true;
+				wm.removeView(background);
+				wm.removeView(pieView);
 				Log.d("pie:", "release");
 			}else if(event.getAction() == MotionEvent.ACTION_MOVE){
 				dragY = (int) -event.getY();
@@ -95,12 +104,11 @@ public class TriggerService extends Service{
 		super.onDestroy();
 	}
 
-	public void fadeToDark(){
-
+	private void fadeToDark(){
 		(new Thread(){
 			int n = 0;
 			public void run(){
-				
+
 				for(n = 0; n < 200; n++){
 					try{
 						runOnUiThread(new Runnable(){
@@ -115,18 +123,12 @@ public class TriggerService extends Service{
 					}
 				}
 			}
-
 		}).start();
-
 	}
 
-	@SuppressWarnings("deprecation")
-	public void startPie(){
-		pieOutline.setImageResource(R.drawable.pie);
-		pieOutline.setScaleType(ImageView.ScaleType.FIT_XY);
-
-		pwidth = display.getWidth();
-		pheight = pwidth / 2;
+	private void startPie(){		
+		pwidth = displayWidth;
+		pheight = displayHeight;
 
 		pparams = new WindowManager.LayoutParams(
 				pwidth,
@@ -135,19 +137,17 @@ public class TriggerService extends Service{
 				WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
 				PixelFormat.TRANSLUCENT
 				);
-
-		pparams.gravity = Gravity.CENTER | Gravity.BOTTOM;
-		wm.addView(pieOutline, pparams);
+		
+		wm.addView(pieView, bparams);
 	}
 
-	@SuppressWarnings("deprecation")
-	public void startTrigger(){
+	private void startTrigger(){
 		detectorArea.setImageResource(R.drawable.detector);
 		detectorArea.setOnTouchListener(triggerTouchListener);
 		detectorArea.setScaleType(ImageView.ScaleType.FIT_XY);
-		twidth = display.getWidth() / 2;
-		theight = 5;
-		shadow_threshold = display.getHeight() / 3;
+		twidth = displayWidth / 2;
+		theight = 10;
+		shadow_threshold = displayHeight / 3;
 
 		tparams = new WindowManager.LayoutParams(
 				twidth,
@@ -162,10 +162,9 @@ public class TriggerService extends Service{
 		wm.addView(detectorArea, tparams);
 	}
 
-	@SuppressWarnings("deprecation")
-	public void startBackground(){
-		bwidth = display.getWidth();
-		bheight = display.getHeight();
+	private void startBackground(){
+		bwidth = displayWidth;
+		bheight = displayHeight;
 
 		bparams = new WindowManager.LayoutParams(
 				bwidth,

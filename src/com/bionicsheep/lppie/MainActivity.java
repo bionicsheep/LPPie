@@ -44,7 +44,7 @@ public class MainActivity extends PreferenceActivity {
 				startPie((Boolean) newValue);
 				//hacky wacky waving inflatable code man
 				if((Boolean) newValue == true){
-					currentActivity.finish();
+					//currentActivity.finish();
 				}
 				return true;
 			}
