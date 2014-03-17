@@ -85,6 +85,8 @@ public class TriggerService extends Service{
 				wm.removeView(pieView);
 				Log.d("pie:", "release");
 			}else if(event.getAction() == MotionEvent.ACTION_MOVE){
+				pieView.highLight(event);
+				
 				dragY = (int) -event.getY();
 				if(scanning && dragY > shadow_threshold){
 					Log.d("pie", "threshold hit");
