@@ -2,6 +2,7 @@ package com.bionicsheep.lppie;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
@@ -39,7 +40,8 @@ public class TriggerService extends Service{
 	
 	Canvas canvas;
 	PieControls pieView;
-
+	SharedPreferences sp;
+	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// We want this service to continue running until it is explicitly
@@ -50,6 +52,7 @@ public class TriggerService extends Service{
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(){
+		sp = getSharedPreferences("app_settings", MODE_PRIVATE);
 		detectorArea = new ImageView(this);
 		background = new ImageView(this);
 
@@ -61,7 +64,7 @@ public class TriggerService extends Service{
 		displayWidth = display.getWidth();
 		displayHeight = display.getHeight();
 		
-		pieView = new PieControls(this);
+		pieView = new PieControls(this,sp);
 
 		startTrigger();
 	}
@@ -80,13 +83,22 @@ public class TriggerService extends Service{
 				startBackground();
 				startPie();
 			}else if(event.getAction() == MotionEvent.ACTION_UP){
+				switch (pieView.checkForAction(event)){
+				case 1:
+					break;
+				case 2:
+					Intent startMain = new Intent(Intent.ACTION_MAIN);
+					startMain.addCategory(Intent.CATEGORY_HOME);
+					startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					startActivity(startMain);
+					break;
+				}
 				scanning = true;
 				wm.removeView(background);
 				wm.removeView(pieView);
 				Log.d("pie:", "release");
 			}else if(event.getAction() == MotionEvent.ACTION_MOVE){
-				pieView.highLight(event);
-				
+				pieView.checkForAction(event);
 				dragY = (int) -event.getY();
 				if(scanning && dragY > shadow_threshold){
 					Log.d("pie", "threshold hit");

@@ -1,6 +1,5 @@
 package com.bionicsheep.lppie;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,7 +7,6 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.widget.Toast;
 
@@ -44,11 +42,6 @@ public class MainActivity extends PreferenceActivity {
 		service_checkbox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				startPie((Boolean) newValue);
-				//dispatchKey();
-				//hacky wacky waving inflatable code man
-				if((Boolean) newValue == true){
-					//currentActivity.finish();
-				}
 				return true;
 			}
 		});
@@ -88,12 +81,10 @@ public class MainActivity extends PreferenceActivity {
 		editor = sp.edit();
 		editor.putBoolean("firstrun", false);
 		editor.putBoolean("service_status", false);
+		editor.putString("p1", "#73000000");
+		editor.putString("p2", "#73000000");
+		editor.putString("p3", "#73000000");
+		editor.putString("primary", "#BFFFFFFF");
 		editor.commit();
-	}
-	
-	@SuppressLint("InlinedApi")
-	private void dispatchKey(){
-		this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
-		this.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK));
 	}
 }

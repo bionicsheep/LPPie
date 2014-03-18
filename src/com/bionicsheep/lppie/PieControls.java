@@ -2,6 +2,7 @@ package com.bionicsheep.lppie;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -11,18 +12,19 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
 public class PieControls extends View{
+	
+	SharedPreferences sp;
+	SharedPreferences.Editor editor;
 
 	int height, width;
 	int origX, origY;
 	
 	int innerRadius;
 	int outerRadius;
-	
 	int selected = 0;
 	
 	RectF outsideBounds;
@@ -30,10 +32,18 @@ public class PieControls extends View{
 	RectF middleBounds;
 
 	private Paint painter;
+	
+	Canvas canvas;
 
 	public PieControls(Context context) {
 		super(context);
 		painter = new Paint(Paint.ANTI_ALIAS_FLAG);
+	}
+
+	public PieControls(Context context, SharedPreferences prefs) {
+		super(context);
+		painter = new Paint(Paint.ANTI_ALIAS_FLAG);
+		sp = prefs;
 	}
 
 	@Override
@@ -44,13 +54,15 @@ public class PieControls extends View{
 		origY = height;
 		origX = width / 2;
 
-		
+		drawPie(canvas);
+	}
+	
+	private void drawPie(Canvas canvas){
 		drawOutlines(canvas);
 		drawIcons(canvas);
 	}
 
-	private void drawOutlines(Canvas canvas){		
-		
+	private void drawOutlines(Canvas canvas){
 		innerRadius = (width / 6);
 		outerRadius = (width / 5) * 2;
 		
@@ -69,10 +81,14 @@ public class PieControls extends View{
 		
 		painter.setStrokeWidth((float)(outerRadius-innerRadius-1));
 		painter.setStyle(Paint.Style.STROKE);
-		painter.setColor(Color.argb(100,0,0,0));
 		
+		painter.setColor(Color.parseColor(sp.getString("p1", "#FF000000")));
 		canvas.drawArc(middleBounds, -165, 50, false, painter);
+		
+		painter.setColor(Color.parseColor(sp.getString("p2", "#FF000000")));
 		canvas.drawArc(middleBounds, -115, 50, false, painter);
+		
+		painter.setColor(Color.parseColor(sp.getString("p3", "#FF000000")));
 		canvas.drawArc(middleBounds, -65, 50, false, painter);
 		
 		painter.setColor(Color.argb(150,255,255,255));
@@ -121,28 +137,44 @@ public class PieControls extends View{
 	@SuppressLint("InlinedApi")
 	public int checkForAction(MotionEvent event){
 		int x = (int) (event.getRawX() - origX);
-		int y = (int) (height - event.getRawY());
+		int y = (int) (this.getHeight() - event.getRawY());
+		
+		Log.d("pie","x " + x);
+		Log.d("pie", "y " + y);
 		
 		double radius = Math.sqrt( x * x + y * y );
 		double angle = Math.toDegrees(Math.acos( x / radius ));
 		
 		if(radius < outerRadius && radius > innerRadius){
-			Log.d("pie","radius");
-			if(angle > 15 && angle < 65){
-				return KeyEvent.KEYCODE_APP_SWITCH;
+			if(angle > 115 && angle < 165){
+				highlight("p1");
+				return 1;
 			}else if(angle > 65 && angle < 115){
-				return KeyEvent.KEYCODE_HOME;
-			}else if(angle > 115 && angle < 165){
-				return KeyEvent.KEYCODE_BACK;
+				highlight("p2");
+				return 2;
+			}else if(angle > 15 && angle < 65){
+				highlight("p3");
+				return 3;
 			}
 		}
-		
+		highlight("none");
 		return -1;
 	}
 	
-	//todo
-	public void highLight(MotionEvent event){
+	private void highlight(String slot){
+		editor = sp.edit();
+		editor.putString("p1", "#73000000");
+		editor.putString("p2", "#73000000");
+		editor.putString("p3", "#73000000");
 		
+		if(slot.equals("p1")){
+			editor.putString("p1", "#BFFFFFFF");
+		}else if(slot.equals("p2")){
+			editor.putString("p2", "#BFFFFFFF");
+		}else if(slot.equals("p3")){
+			editor.putString("p3", "#BFFFFFFF");
+		}
+		editor.commit();
+		invalidate();
 	}
-
 }
