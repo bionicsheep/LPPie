@@ -1,5 +1,7 @@
 package com.bionicsheep.lppie;
 
+import java.lang.reflect.Method;
+
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,10 +28,10 @@ public class TriggerService extends Service{
 	int twidth, theight;
 	int pwidth, pheight;
 	int bwidth, bheight;
-	
+
 	Display display;
 	int displayWidth, displayHeight;
-	
+
 	boolean scanning = true;
 	int dragY;
 	int shadow_threshold;
@@ -37,11 +39,11 @@ public class TriggerService extends Service{
 	Service currentActivity = this;
 	Handler handler;
 	Toast toast;
-	
+
 	Canvas canvas;
 	PieControls pieView;
 	SharedPreferences sp;
-	
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// We want this service to continue running until it is explicitly
@@ -63,7 +65,7 @@ public class TriggerService extends Service{
 
 		displayWidth = display.getWidth();
 		displayHeight = display.getHeight();
-		
+
 		pieView = new PieControls(this,sp);
 
 		startTrigger();
@@ -79,12 +81,12 @@ public class TriggerService extends Service{
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			if(event.getAction() == MotionEvent.ACTION_DOWN){
-				Log.d("pie:", "bound");
 				startBackground();
 				startPie();
 			}else if(event.getAction() == MotionEvent.ACTION_UP){
 				switch (pieView.checkForAction(event)){
 				case 1:
+
 					break;
 				case 2:
 					Intent startMain = new Intent(Intent.ACTION_MAIN);
@@ -92,11 +94,13 @@ public class TriggerService extends Service{
 					startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 					startActivity(startMain);
 					break;
+				case 3:
+					launchRecents();
+					break;
 				}
 				scanning = true;
 				wm.removeView(background);
 				wm.removeView(pieView);
-				Log.d("pie:", "release");
 			}else if(event.getAction() == MotionEvent.ACTION_MOVE){
 				pieView.checkForAction(event);
 				dragY = (int) -event.getY();
@@ -141,17 +145,6 @@ public class TriggerService extends Service{
 	}
 
 	private void startPie(){		
-		pwidth = displayWidth;
-		pheight = displayHeight;
-
-		pparams = new WindowManager.LayoutParams(
-				pwidth,
-				pheight,
-				WindowManager.LayoutParams.TYPE_PHONE,
-				WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-				PixelFormat.TRANSLUCENT
-				);
-		
 		wm.addView(pieView, bparams);
 	}
 
@@ -179,6 +172,7 @@ public class TriggerService extends Service{
 	private void startBackground(){
 		bwidth = displayWidth;
 		bheight = displayHeight;
+		Log.d("display","height " + displayHeight);
 
 		bparams = new WindowManager.LayoutParams(
 				bwidth,
@@ -196,5 +190,20 @@ public class TriggerService extends Service{
 
 	private void runOnUiThread(Runnable runnable) {
 		handler.post(runnable);
+	}
+
+	private void launchRecents(){
+		try {
+			Class<?> ServiceManager = Class.forName("android.os.ServiceManager");
+			Method getService = ServiceManager.getMethod("getService",new Class[] { String.class });
+			Object[] statusbarObj = new Object[] { "statusbar" };
+			IBinder binder = (IBinder) getService.invoke(ServiceManager,statusbarObj);
+			Class<?> IStatusBarService = Class.forName("com.android.internal.statusbar.IStatusBarService").getClasses()[0];
+			Method asInterface = IStatusBarService.getMethod("asInterface",new Class[] { IBinder.class });
+			Object obj = asInterface.invoke(null, new Object[] { binder });
+			IStatusBarService.getMethod("toggleRecentApps", new Class[0]).invoke(obj, new Object[0]);
+		} catch (Exception e) {
+
+		}
 	}
 }

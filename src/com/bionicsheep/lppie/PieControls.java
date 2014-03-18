@@ -11,7 +11,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -139,8 +138,9 @@ public class PieControls extends View{
 		int x = (int) (event.getRawX() - origX);
 		int y = (int) (this.getHeight() - event.getRawY());
 		
-		Log.d("pie","x " + x);
-		Log.d("pie", "y " + y);
+		//Log.d("pie","x " + x);
+		//Log.d("pie", "y " + y);
+		//Log.d("pie", "origY " + origY);
 		
 		double radius = Math.sqrt( x * x + y * y );
 		double angle = Math.toDegrees(Math.acos( x / radius ));
