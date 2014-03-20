@@ -1,6 +1,8 @@
 package com.bionicsheep.lppie;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -68,11 +70,10 @@ public class MainActivity extends PreferenceActivity {
 
 	public void loadValues(){
 		sp = getSharedPreferences("app_settings", MODE_PRIVATE);
-		
+
 		boolean firstRun = sp.getBoolean("firstrun", true);
 		if(firstRun){
-			toast = Toast.makeText(this, "First Run", Toast.LENGTH_LONG);
-			toast.show();
+			accessServicePrompt();
 			enterValues();
 		}
 	}
@@ -85,6 +86,35 @@ public class MainActivity extends PreferenceActivity {
 		editor.putString("p2", "#73000000");
 		editor.putString("p3", "#73000000");
 		editor.putString("primary", "#BFFFFFFF");
+		editor.putString("primary_reference", "#73000000");
+		editor.putString("secondary_reference", "#BFFFFFFF");
+		editor.putString("tertiary_reference", "#BFFFFFFF");
 		editor.commit();
+	}
+
+	public void accessServicePrompt(){
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+		// set title
+		alertDialogBuilder.setTitle("Enable Pie Accessibility");
+
+		// set dialog message
+		alertDialogBuilder
+		.setMessage("In order for this app to work properly, accessibility services for it " +
+				"must be turn on under your devices settings. Turn them to on to get navigation " +
+				"functionality.")
+				.setCancelable(false)
+				.setNeutralButton("Okay", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,int id) {
+						Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+						startActivity(intent);
+					}
+				});
+
+		// create alert dialog
+		AlertDialog alertDialog = alertDialogBuilder.create();
+
+		// show it
+		alertDialog.show();
 	}
 }

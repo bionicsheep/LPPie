@@ -1,15 +1,17 @@
 package com.bionicsheep.lppie;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,7 +20,10 @@ public class PieControls extends View{
 	
 	SharedPreferences sp;
 	SharedPreferences.Editor editor;
-
+	
+	ColorFilter filter;
+	
+	boolean reset;
 	int height, width;
 	int origX, origY;
 	
@@ -62,6 +67,9 @@ public class PieControls extends View{
 	}
 
 	private void drawOutlines(Canvas canvas){
+		filter = new PorterDuffColorFilter(Color.parseColor(sp.getString("secondary_reference", "#FFFFFFFF")), PorterDuff.Mode.MULTIPLY);
+		painter.setColorFilter(filter);
+		
 		innerRadius = (width / 6);
 		outerRadius = (width / 5) * 2;
 		
@@ -81,13 +89,13 @@ public class PieControls extends View{
 		painter.setStrokeWidth((float)(outerRadius-innerRadius-1));
 		painter.setStyle(Paint.Style.STROKE);
 		
-		painter.setColor(Color.parseColor(sp.getString("p1", "#FF000000")));
+		painter.setColor(Color.parseColor(sp.getString("p1", sp.getString("primary_reference", "NULL"))));
 		canvas.drawArc(middleBounds, -165, 50, false, painter);
 		
-		painter.setColor(Color.parseColor(sp.getString("p2", "#FF000000")));
+		painter.setColor(Color.parseColor(sp.getString("p2", sp.getString("primary_reference", "NULL"))));
 		canvas.drawArc(middleBounds, -115, 50, false, painter);
 		
-		painter.setColor(Color.parseColor(sp.getString("p3", "#FF000000")));
+		painter.setColor(Color.parseColor(sp.getString("p3", sp.getString("primary_reference", "NULL"))));
 		canvas.drawArc(middleBounds, -65, 50, false, painter);
 		
 		painter.setColor(Color.argb(150,255,255,255));
@@ -100,15 +108,18 @@ public class PieControls extends View{
 		canvas.drawLine(p2.x, p2.y, p6.x, p6.y, painter);
 		canvas.drawLine(p3.x, p3.y, p7.x, p7.y, painter);
 		canvas.drawLine(p4.x, p4.y, p8.x, p8.y, painter);
+		
+		painter.setColorFilter(null);
 	}
 
 	private void drawIcons(Canvas canvas){
 		painter.setColor(Color.argb(255,255,255,255));
+		filter = new PorterDuffColorFilter(Color.parseColor(sp.getString("tertiary_reference", "#FFFFFFFF")), PorterDuff.Mode.MULTIPLY);
+		painter.setColorFilter(filter);
 		
 		Point homePt = new Point(origX,origY - (int)((innerRadius + outerRadius)/1.8));
 		Bitmap home = BitmapFactory.decodeResource(getResources(), R.drawable.ic_sysbar_home);		
 		canvas.drawBitmap(home, homePt.x - home.getWidth()/2,(int) (homePt.y - home.getHeight()/2), painter);
-		
 		
 		Point backPt = new Point((int) (origX + ((innerRadius + outerRadius)/1.8 * Math.cos(Math.toRadians(140)))), (int) (origY - ((innerRadius + outerRadius)/1.8 * Math.sin(Math.toRadians(140)))));
 		Bitmap back = BitmapFactory.decodeResource(getResources(), R.drawable.ic_sysbar_back);
@@ -120,7 +131,7 @@ public class PieControls extends View{
 		recent = rotate(recent,50);
 		canvas.drawBitmap(recent, recentPt.x - recent.getWidth()/2, recentPt.y - recent.getHeight()/2,painter);
 		
-		
+		painter.setColorFilter(null);
 	}
 	
 	private Bitmap rotate(Bitmap img, int angle){
@@ -133,14 +144,9 @@ public class PieControls extends View{
 		return bmp;
 	}
 	
-	@SuppressLint("InlinedApi")
 	public int checkForAction(MotionEvent event){
 		int x = (int) (event.getRawX() - origX);
 		int y = (int) (this.getHeight() - event.getRawY());
-		
-		//Log.d("pie","x " + x);
-		//Log.d("pie", "y " + y);
-		//Log.d("pie", "origY " + origY);
 		
 		double radius = Math.sqrt( x * x + y * y );
 		double angle = Math.toDegrees(Math.acos( x / radius ));
@@ -156,25 +162,39 @@ public class PieControls extends View{
 				highlight("p3");
 				return 3;
 			}
+		}else{
+			if(reset == false){
+				highlight("junk");
+				reset = true;
+			}
 		}
-		highlight("none");
 		return -1;
 	}
 	
 	private void highlight(String slot){
 		editor = sp.edit();
-		editor.putString("p1", "#73000000");
-		editor.putString("p2", "#73000000");
-		editor.putString("p3", "#73000000");
+		resetColor();
 		
 		if(slot.equals("p1")){
-			editor.putString("p1", "#BFFFFFFF");
+			editor.putString("p1", sp.getString("secondary_reference", "NULL"));
+			reset = false;
 		}else if(slot.equals("p2")){
-			editor.putString("p2", "#BFFFFFFF");
+			editor.putString("p2", sp.getString("secondary_reference", "NULL"));
+			reset = false;
 		}else if(slot.equals("p3")){
-			editor.putString("p3", "#BFFFFFFF");
+			editor.putString("p3", sp.getString("secondary_reference", "NULL"));
+			reset = false;
 		}
+				
 		editor.commit();
 		invalidate();
+	}
+	
+	public void resetColor(){
+		editor = sp.edit();
+		editor.putString("p1", sp.getString("primary_reference", "NULL"));
+		editor.putString("p2", sp.getString("primary_reference", "NULL"));
+		editor.putString("p3", sp.getString("primary_reference", "NULL"));
+		editor.commit();
 	}
 }

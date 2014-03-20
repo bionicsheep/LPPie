@@ -1,7 +1,6 @@
 package com.bionicsheep.lppie;
 
-import java.lang.reflect.Method;
-
+import android.accessibilityservice.AccessibilityService;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,7 +8,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Handler;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -17,10 +15,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class TriggerService extends Service{
+public class TriggerService extends AccessibilityService{
 
 	ImageView detectorArea, background;
 	WindowManager wm;
@@ -48,6 +47,9 @@ public class TriggerService extends Service{
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// We want this service to continue running until it is explicitly
 		// stopped, so return sticky.
+		
+        Toast toast = Toast.makeText(this, "Pie AutoStarted", Toast.LENGTH_SHORT);
+        toast.show();
 		return START_STICKY;
 	}
 
@@ -71,11 +73,6 @@ public class TriggerService extends Service{
 		startTrigger();
 	}
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	private OnTouchListener triggerTouchListener = new OnTouchListener(){
 		@Override
@@ -84,18 +81,16 @@ public class TriggerService extends Service{
 				startBackground();
 				startPie();
 			}else if(event.getAction() == MotionEvent.ACTION_UP){
+				pieView.resetColor();
 				switch (pieView.checkForAction(event)){
 				case 1:
-
+					performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
 					break;
 				case 2:
-					Intent startMain = new Intent(Intent.ACTION_MAIN);
-					startMain.addCategory(Intent.CATEGORY_HOME);
-					startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(startMain);
+					performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
 					break;
 				case 3:
-					launchRecents();
+					performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
 					break;
 				}
 				scanning = true;
@@ -149,7 +144,7 @@ public class TriggerService extends Service{
 	}
 
 	private void startTrigger(){
-		detectorArea.setImageResource(R.drawable.detector);
+		//detectorArea.setImageResource(R.drawable.detector);
 		detectorArea.setOnTouchListener(triggerTouchListener);
 		detectorArea.setScaleType(ImageView.ScaleType.FIT_XY);
 		twidth = displayWidth / 2;
@@ -181,7 +176,6 @@ public class TriggerService extends Service{
 				WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
 				PixelFormat.TRANSPARENT
 				);
-
 		bparams.gravity = Gravity.CENTER | Gravity.BOTTOM;
 
 		wm.addView(background, bparams);
@@ -192,18 +186,15 @@ public class TriggerService extends Service{
 		handler.post(runnable);
 	}
 
-	private void launchRecents(){
-		try {
-			Class<?> ServiceManager = Class.forName("android.os.ServiceManager");
-			Method getService = ServiceManager.getMethod("getService",new Class[] { String.class });
-			Object[] statusbarObj = new Object[] { "statusbar" };
-			IBinder binder = (IBinder) getService.invoke(ServiceManager,statusbarObj);
-			Class<?> IStatusBarService = Class.forName("com.android.internal.statusbar.IStatusBarService").getClasses()[0];
-			Method asInterface = IStatusBarService.getMethod("asInterface",new Class[] { IBinder.class });
-			Object obj = asInterface.invoke(null, new Object[] { binder });
-			IStatusBarService.getMethod("toggleRecentApps", new Class[0]).invoke(obj, new Object[0]);
-		} catch (Exception e) {
+	@Override
+	public void onAccessibilityEvent(AccessibilityEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
 
-		}
+	@Override
+	public void onInterrupt() {
+		// TODO Auto-generated method stub
+		
 	}
 }

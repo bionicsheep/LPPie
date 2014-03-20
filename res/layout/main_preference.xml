@@ -4,29 +4,35 @@
     <PreferenceCategory android:title="@string/pref_service_setting" >
 
         <CheckBoxPreference
-            android:defaultValue="false"
             android:id="@+id/service_checkbox"
+            android:defaultValue="false"
             android:key="service_checkbox"
             android:title="@string/service_checkbox" >
         </CheckBoxPreference>
-        <Preference
-            android:title="@string/notification_link" >
+
+        <Preference android:title="@string/notification_link" >
         </Preference>
     </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/pref_appearance_setting" >
-        <Preference
-            android:title="@string/color_link" >
+
+        <Preference android:title="@string/color_link" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:targetClass="com.bionicsheep.lppie.ColorActivity"
+                android:targetPackage="com.bionicsheep.lppie" />
         </Preference>
-        <Preference
-            android:title="@string/behavior_link" >
+
+        <Preference android:title="@string/behavior_link" >
         </Preference>
-        <Preference
-            android:title="@string/sizing_link" >
+
+        <Preference android:title="@string/sizing_link" >
         </Preference>
     </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/full_version_setting" >
-        <Preference
-            android:title="@string/upgrade_link" >
+
+        <Preference android:title="@string/upgrade_link" >
         </Preference>
     </PreferenceCategory>
 
