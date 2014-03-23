@@ -13,12 +13,7 @@
     </style>
 
     <!-- Application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light">
-        <item name="android:actionBarStyle">@style/ActionBarTheme</item>
-    </style>
-
-    <style name="ActionBarTheme" parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@color/action_bar</item>
+    <style name="AppTheme" parent="AppBaseTheme">
     </style>
 
     <integer name="COLOR_BLACK">0x73000000</integer>

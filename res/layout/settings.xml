@@ -19,9 +19,5 @@
 			android:defaultValue="@integer/COLOR_WHITE"
 			alphaSlider="true" 
 		/>
-		<Preference
-		    android:title="@string/color_fourth"
-		    android:key="color_reset" >
-		</Preference>
 	</PreferenceCategory>
 </PreferenceScreen>

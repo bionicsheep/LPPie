@@ -1,7 +1,7 @@
 <resources>
 
     <string name="app_name">LPPie</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_reset">Reset</string>
     
     <string name="pref_service_setting">Service Setting</string>
     <string name="service_checkbox">Enable/Disable Service</string>
@@ -20,5 +20,10 @@
 	
 	<string name="full_version_setting">Upgrade to Pro</string>
 	<string name="upgrade_link">Play Store</string>
+	
+	<string name="accessibility_service_description">This service needs to be enabled for the Home, Back,
+	     and Recents buttons to function properly. \n \nOnce enabled, Pie will be on all the time until it is 
+	     disabled. The service will start up on boot so there is no need to do this more than once unless 
+	     you disable Pie.</string>
 	
 </resources>

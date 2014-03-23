@@ -30,7 +30,7 @@ public class PieControls extends View{
 	
 	int innerRadius;
 	int outerRadius;
-	int selected = 0;
+	int alpha = 50;
 	
 	RectF outsideBounds;
 	RectF insideBounds;
@@ -66,6 +66,7 @@ public class PieControls extends View{
 	}
 	
 	private void drawPie(Canvas canvas){
+		drawBackground(canvas);
 		drawOutlines(canvas);
 		drawIcons(canvas);
 	}
@@ -191,6 +192,13 @@ public class PieControls extends View{
 				
 		editor.commit();
 		invalidate();
+	}
+	
+	private void drawBackground(Canvas canvas){
+		painter.setColor(Color.argb(alpha,0,0,0));
+		RectF background = new RectF(0,0,width,height);
+		canvas.drawRect(background, painter);
+		
 	}
 	
 	public void resetColor(){
