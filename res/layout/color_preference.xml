@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?><PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="Customize" >
+    <PreferenceCategory android:title="@string/color_categ" >
 
         <Preference
-            android:title="Main Color"
-            android:key="mainColor">
+            android:title="@string/color_first"
+            android:key="mainColor" >
         </Preference>
         <Preference
-            android:title="Outline Color">
+            android:title="@string/color_second"
+            android:key="outlineColor" >
         </Preference>
         <Preference
-            android:title="Icon Color" >
+            android:title="@string/color_third"
+            android:key="iconColor" >
+        </Preference>
+        <Preference
+            android:title="@string/color_fourth"
+            android:key="resetColor" >
         </Preference>
     </PreferenceCategory>
     

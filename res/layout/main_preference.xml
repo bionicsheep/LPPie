@@ -3,12 +3,11 @@
 
     <PreferenceCategory android:title="@string/pref_service_setting" >
 
-        <CheckBoxPreference
+        <Preference
             android:id="@+id/service_checkbox"
-            android:defaultValue="false"
             android:key="service_checkbox"
             android:title="@string/service_checkbox" >
-        </CheckBoxPreference>
+        </Preference>
 
         <Preference android:title="@string/notification_link" >
         </Preference>

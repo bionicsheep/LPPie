@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/color_categ">
+		<net.margaritov.preference.colorpicker.ColorPickerPreference 
+			android:key="color1"
+			android:title="@string/color_first" 
+			android:defaultValue="@integer/COLOR_WHITE"
+			alphaSlider="true"
+		/>
+		<net.margaritov.preference.colorpicker.ColorPickerPreference 
+			android:key="color2"
+			android:title="@string/color_second" 
+			android:defaultValue="@integer/COLOR_BLACK" 
+			alphaSlider="true"
+		/>
+		<net.margaritov.preference.colorpicker.ColorPickerPreference 
+			android:key="color3"
+			android:title="@string/color_third" 
+			android:defaultValue="@integer/COLOR_WHITE"
+			alphaSlider="true" 
+		/>
+		<Preference
+		    android:title="@string/color_fourth"
+		    android:key="color_reset" >
+		</Preference>
+	</PreferenceCategory>
+</PreferenceScreen>

@@ -13,6 +13,7 @@ import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -38,16 +39,19 @@ public class PieControls extends View{
 	private Paint painter;
 	
 	Canvas canvas;
+	
+	int dm;
 
 	public PieControls(Context context) {
 		super(context);
 		painter = new Paint(Paint.ANTI_ALIAS_FLAG);
 	}
 
-	public PieControls(Context context, SharedPreferences prefs) {
+	public PieControls(Context context, SharedPreferences prefs, int metrics) {
 		super(context);
 		painter = new Paint(Paint.ANTI_ALIAS_FLAG);
 		sp = prefs;
+		dm = metrics;
 	}
 
 	@Override
@@ -66,12 +70,9 @@ public class PieControls extends View{
 		drawIcons(canvas);
 	}
 
-	private void drawOutlines(Canvas canvas){
-		filter = new PorterDuffColorFilter(Color.parseColor(sp.getString("secondary_reference", "#FFFFFFFF")), PorterDuff.Mode.MULTIPLY);
-		painter.setColorFilter(filter);
-		
-		innerRadius = (width / 6);
-		outerRadius = (width / 5) * 2;
+	private void drawOutlines(Canvas canvas){	
+		innerRadius = (dm / 6);
+		outerRadius = (dm / 5) * 2;
 		
 		Point p1 = new Point((int) (origX + (innerRadius * Math.cos(Math.toRadians(165)))), (int) (origY - (innerRadius * Math.sin(Math.toRadians(165)))));
 		Point p2 = new Point((int) (origX + (innerRadius * Math.cos(Math.toRadians(115)))), (int) (origY - (innerRadius * Math.sin(Math.toRadians(115)))));
@@ -98,18 +99,17 @@ public class PieControls extends View{
 		painter.setColor(Color.parseColor(sp.getString("p3", sp.getString("primary_reference", "NULL"))));
 		canvas.drawArc(middleBounds, -65, 50, false, painter);
 		
-		painter.setColor(Color.argb(150,255,255,255));
+		painter.setColor(Color.parseColor(sp.getString("secondary_reference", "NULL")));
 		painter.setStrokeWidth((float)5.0);
 		
 		canvas.drawArc(insideBounds, -165, 150, false, painter);
 		canvas.drawArc(outsideBounds, -165, 150, false, painter);
-
+		
 		canvas.drawLine(p1.x, p1.y, p5.x, p5.y, painter);
 		canvas.drawLine(p2.x, p2.y, p6.x, p6.y, painter);
 		canvas.drawLine(p3.x, p3.y, p7.x, p7.y, painter);
 		canvas.drawLine(p4.x, p4.y, p8.x, p8.y, painter);
 		
-		painter.setColorFilter(null);
 	}
 
 	private void drawIcons(Canvas canvas){
@@ -147,6 +147,9 @@ public class PieControls extends View{
 	public int checkForAction(MotionEvent event){
 		int x = (int) (event.getRawX() - origX);
 		int y = (int) (this.getHeight() - event.getRawY());
+		
+		Log.d("pie","x: " + x);
+		Log.d("pie","y: " + y);
 		
 		double radius = Math.sqrt( x * x + y * y );
 		double angle = Math.toDegrees(Math.acos( x / radius ));
@@ -196,5 +199,10 @@ public class PieControls extends View{
 		editor.putString("p2", sp.getString("primary_reference", "NULL"));
 		editor.putString("p3", sp.getString("primary_reference", "NULL"));
 		editor.commit();
+	}
+	
+	public void updateDisplayParams(int rwidth, int rheight){
+		origY = rheight;
+		origX = rwidth / 2;
 	}
 }

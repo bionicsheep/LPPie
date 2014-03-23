@@ -4,12 +4,14 @@ import android.accessibilityservice.AccessibilityService;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Handler;
+import android.os.Vibrator;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,13 +27,13 @@ public class TriggerService extends AccessibilityService{
 	WindowManager wm;
 	WindowManager.LayoutParams tparams, bparams, pparams;
 	int twidth, theight;
-	int pwidth, pheight;
-	int bwidth, bheight;
-
-	Display display;
+	
+	DisplayMetrics metrics = new DisplayMetrics();
 	int displayWidth, displayHeight;
+	int pWidth, pHeight;
 
 	boolean scanning = true;
+	boolean triggered = false;
 	int dragY;
 	int shadow_threshold;
 
@@ -41,7 +43,10 @@ public class TriggerService extends AccessibilityService{
 
 	Canvas canvas;
 	PieControls pieView;
+	Background backgroundView;
 	SharedPreferences sp;
+	
+	Vibrator vibrate;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -53,7 +58,6 @@ public class TriggerService extends AccessibilityService{
 		return START_STICKY;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(){
 		sp = getSharedPreferences("app_settings", MODE_PRIVATE);
@@ -63,25 +67,30 @@ public class TriggerService extends AccessibilityService{
 		handler = new Handler();
 
 		wm = (WindowManager) getSystemService(WINDOW_SERVICE);		
-		display = wm.getDefaultDisplay();
+		wm.getDefaultDisplay().getMetrics(metrics);
 
-		displayWidth = display.getWidth();
-		displayHeight = display.getHeight();
+		displayWidth = metrics.widthPixels;
+		displayHeight = metrics.heightPixels;
+		pWidth = metrics.widthPixels;
+		pHeight = metrics.heightPixels;
 
-		pieView = new PieControls(this,sp);
+		pieView = new PieControls(this, sp, metrics.widthPixels);
+		backgroundView = new Background(this);
 
 		startTrigger();
+		vibrate = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 	}
-
 
 	private OnTouchListener triggerTouchListener = new OnTouchListener(){
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			if(event.getAction() == MotionEvent.ACTION_DOWN){
+				triggered = true;
 				startBackground();
 				startPie();
-			}else if(event.getAction() == MotionEvent.ACTION_UP){
 				pieView.resetColor();
+				vibrate.vibrate(5);
+			}else if(event.getAction() == MotionEvent.ACTION_UP){				
 				switch (pieView.checkForAction(event)){
 				case 1:
 					performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
@@ -93,9 +102,11 @@ public class TriggerService extends AccessibilityService{
 					performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
 					break;
 				}
+				vibrate.vibrate(5);
+				pieView.resetColor();
+				triggered = false;
 				scanning = true;
-				wm.removeView(background);
-				wm.removeView(pieView);
+				destruct(1);
 			}else if(event.getAction() == MotionEvent.ACTION_MOVE){
 				pieView.checkForAction(event);
 				dragY = (int) -event.getY();
@@ -144,7 +155,6 @@ public class TriggerService extends AccessibilityService{
 	}
 
 	private void startTrigger(){
-		//detectorArea.setImageResource(R.drawable.detector);
 		detectorArea.setOnTouchListener(triggerTouchListener);
 		detectorArea.setScaleType(ImageView.ScaleType.FIT_XY);
 		twidth = displayWidth / 2;
@@ -165,13 +175,11 @@ public class TriggerService extends AccessibilityService{
 	}
 
 	private void startBackground(){
-		bwidth = displayWidth;
-		bheight = displayHeight;
-		Log.d("display","height " + displayHeight);
+		updateMetrics();
 
 		bparams = new WindowManager.LayoutParams(
-				bwidth,
-				bheight,
+				displayWidth,
+				displayHeight,
 				WindowManager.LayoutParams.TYPE_PHONE,
 				WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
 				PixelFormat.TRANSPARENT
@@ -196,5 +204,36 @@ public class TriggerService extends AccessibilityService{
 	public void onInterrupt() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private void updateMetrics(){
+		wm.getDefaultDisplay().getMetrics(metrics);
+		displayWidth = metrics.widthPixels;
+		displayHeight = metrics.heightPixels;
+		shadow_threshold = displayHeight / 2;
+		pieView.updateDisplayParams(displayWidth, displayHeight);
+	}
+	
+	public void onConfigurationChanged(Configuration newConfig){
+		super.onConfigurationChanged(newConfig);
+		destruct(0);
+	}
+	
+	private void destruct(int type){
+		if(type == 0){
+			if(background != null && triggered){
+				wm.removeView(background);
+			}
+			if(pieView != null && triggered){
+				wm.removeView(pieView);
+			}
+		}else{
+			if(background != null){
+				wm.removeView(background);
+			}
+			if(pieView != null){
+				wm.removeView(pieView);
+			}
+		}
 	}
 }
