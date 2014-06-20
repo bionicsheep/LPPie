@@ -2,6 +2,7 @@ package com.bionicsheep.lppie;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -9,13 +10,18 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
+import android.graphics.Typeface;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 
 public class PieControls extends View{
 	
@@ -30,7 +36,8 @@ public class PieControls extends View{
 	
 	int innerRadius;
 	int outerRadius;
-	int alpha = 50;
+	int clockRadius;
+	private Resources mResources;
 	
 	RectF outsideBounds;
 	RectF insideBounds;
@@ -41,6 +48,8 @@ public class PieControls extends View{
 	Canvas canvas;
 	
 	int dm;
+	
+	DisplayMetrics metrics = new DisplayMetrics();
 
 	public PieControls(Context context) {
 		super(context);
@@ -66,14 +75,21 @@ public class PieControls extends View{
 	}
 	
 	private void drawPie(Canvas canvas){
-		drawBackground(canvas);
 		drawOutlines(canvas);
 		drawIcons(canvas);
+		drawClock(canvas);
 	}
 
 	private void drawOutlines(Canvas canvas){	
-		innerRadius = (dm / 6);
-		outerRadius = (dm / 5) * 2;
+		mResources = getContext().getResources();
+		
+		metrics = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(metrics);
+		
+		innerRadius = (int) (mResources.getDimensionPixelSize(R.dimen.pie_radius_start));
+		outerRadius = (int) (int)(innerRadius + mResources.getDimensionPixelSize(R.dimen.pie_radius_increment));
+		clockRadius = (int) (outerRadius + 30);
 		
 		Point p1 = new Point((int) (origX + (innerRadius * Math.cos(Math.toRadians(165)))), (int) (origY - (innerRadius * Math.sin(Math.toRadians(165)))));
 		Point p2 = new Point((int) (origX + (innerRadius * Math.cos(Math.toRadians(115)))), (int) (origY - (innerRadius * Math.sin(Math.toRadians(115)))));
@@ -101,7 +117,7 @@ public class PieControls extends View{
 		canvas.drawArc(middleBounds, -65, 50, false, painter);
 		
 		painter.setColor(Color.parseColor(sp.getString("secondary_reference", "NULL")));
-		painter.setStrokeWidth((float)5.0);
+		painter.setStrokeWidth((float) (metrics.density * 1.5));
 		
 		canvas.drawArc(insideBounds, -165, 150, false, painter);
 		canvas.drawArc(outsideBounds, -165, 150, false, painter);
@@ -133,6 +149,24 @@ public class PieControls extends View{
 		canvas.drawBitmap(recent, recentPt.x - recent.getWidth()/2, recentPt.y - recent.getHeight()/2,painter);
 		
 		painter.setColorFilter(null);
+	}
+	
+	private void drawClock(Canvas canvas){
+		Path mArc = new Path();
+		RectF oval = new RectF(origX - clockRadius, origY - clockRadius, origX + clockRadius, origY + clockRadius);
+	    mArc.addArc(oval, -165, 70);
+	    Paint mPaintText;
+	    Typeface tf = Typeface.create("sans-serif-light",Typeface.NORMAL);
+	    
+	    mPaintText = new Paint(Paint.ANTI_ALIAS_FLAG);
+	    mPaintText.setStyle(Paint.Style.FILL_AND_STROKE);
+	    mPaintText.setTextAlign(Align.RIGHT);
+	    mPaintText.setTypeface(tf);
+
+	    mPaintText.setColor(Color.parseColor(sp.getString("tertiary_reference", "#FFFFFFFF")));
+	    mPaintText.setTextSize(70 * metrics.density);
+	    canvas.drawTextOnPath("12:48", mArc, 0, 20, mPaintText);
+	    invalidate();
 	}
 	
 	private Bitmap rotate(Bitmap img, int angle){
@@ -192,13 +226,6 @@ public class PieControls extends View{
 				
 		editor.commit();
 		invalidate();
-	}
-	
-	private void drawBackground(Canvas canvas){
-		painter.setColor(Color.argb(alpha,0,0,0));
-		RectF background = new RectF(0,0,width,height);
-		canvas.drawRect(background, painter);
-		
 	}
 	
 	public void resetColor(){

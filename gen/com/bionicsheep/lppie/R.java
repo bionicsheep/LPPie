@@ -11,29 +11,35 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
-        public static final int action_bar=0x7f080000;
+        public static final int action_bar=0x7f090000;
+    }
+    public static final class dimen {
+        public static final int pie_radius_increment=0x7f070001;
+        public static final int pie_radius_start=0x7f070000;
     }
     public static final class drawable {
         public static final int detector=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
-        public static final int ic_sysbar_back=0x7f020002;
-        public static final int ic_sysbar_back_sq=0x7f020003;
-        public static final int ic_sysbar_home=0x7f020004;
-        public static final int ic_sysbar_home_sq=0x7f020005;
-        public static final int ic_sysbar_recent=0x7f020006;
-        public static final int ic_sysbar_recent_sq=0x7f020007;
-        public static final int icon=0x7f020008;
-        public static final int pie=0x7f020009;
+        public static final int ic_action_navigation_previous_item=0x7f020001;
+        public static final int ic_action_rotate_left=0x7f020002;
+        public static final int ic_launcher=0x7f020003;
+        public static final int ic_sysbar_back=0x7f020004;
+        public static final int ic_sysbar_back_sq=0x7f020005;
+        public static final int ic_sysbar_home=0x7f020006;
+        public static final int ic_sysbar_home_sq=0x7f020007;
+        public static final int ic_sysbar_recent=0x7f020008;
+        public static final int ic_sysbar_recent_sq=0x7f020009;
+        public static final int icon=0x7f02000a;
+        public static final int pie=0x7f02000b;
     }
     public static final class id {
-        public static final int action_settings=0x7f0a0007;
-        public static final int color_picker_view=0x7f0a0001;
-        public static final int hex_val=0x7f0a0003;
-        public static final int main_activity_container=0x7f0a0000;
-        public static final int new_color_panel=0x7f0a0005;
-        public static final int old_color_panel=0x7f0a0004;
-        public static final int service_checkbox=0x7f0a0006;
-        public static final int text_hex_wrapper=0x7f0a0002;
+        public static final int action_reset=0x7f0b0007;
+        public static final int color_picker_view=0x7f0b0001;
+        public static final int hex_val=0x7f0b0003;
+        public static final int main_activity_container=0x7f0b0000;
+        public static final int new_color_panel=0x7f0b0005;
+        public static final int old_color_panel=0x7f0b0004;
+        public static final int service_checkbox=0x7f0b0006;
+        public static final int text_hex_wrapper=0x7f0b0002;
     }
     public static final class integer {
         public static final int COLOR_BLACK=0x7f050000;
@@ -41,17 +47,19 @@ public final class R {
         public static final int COLOR_WHITE=0x7f050002;
     }
     public static final class layout {
-        public static final int activity_main=0x7f030000;
-        public static final int color_preference=0x7f030001;
-        public static final int dialog_color_picker=0x7f030002;
-        public static final int main_preference=0x7f030003;
-        public static final int settings=0x7f030004;
+        public static final int accessibility_service_config=0x7f030000;
+        public static final int activity_main=0x7f030001;
+        public static final int color_preference=0x7f030002;
+        public static final int dialog_color_picker=0x7f030003;
+        public static final int main_preference=0x7f030004;
+        public static final int settings=0x7f030005;
     }
     public static final class menu {
-        public static final int main=0x7f090000;
+        public static final int main=0x7f0a0000;
     }
     public static final class string {
-        public static final int action_settings=0x7f06000d;
+        public static final int accessibility_service_description=0x7f06001d;
+        public static final int action_reset=0x7f06000d;
         public static final int app_name=0x7f060001;
         public static final int behavior_link=0x7f060019;
         public static final int color1_summary=0x7f060006;
@@ -88,7 +96,6 @@ public final class R {
         public static final int upgrade_link=0x7f06001c;
     }
     public static final class style {
-        public static final int ActionBarTheme=0x7f070002;
         /** 
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
@@ -112,10 +119,10 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f070000;
+        public static final int AppBaseTheme=0x7f080000;
         /**  Application theme. 
          */
-        public static final int AppTheme=0x7f070001;
+        public static final int AppTheme=0x7f080001;
     }
     public static final class xml {
         public static final int settings=0x7f040000;

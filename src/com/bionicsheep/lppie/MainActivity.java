@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.widget.Toast;
 
 public class MainActivity extends PreferenceActivity {
@@ -28,6 +30,17 @@ public class MainActivity extends PreferenceActivity {
 
 		loadValues();
 		initializeObjects();
+		
+		printShiz(); //delete source
+	}
+	
+	private void printShiz(){
+		DisplayMetrics dm = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(dm);
+		
+		Log.d("Lppie","xdpi: " + dm.xdpi);
+		Log.d("Lppie","ydpi: " + dm.ydpi);
+		Log.d("Lppie","densityDpi: " + dm.densityDpi);
 	}
 
 	@SuppressWarnings("deprecation")

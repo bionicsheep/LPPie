@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="pie_radius_start">65dp</dimen>
+    <dimen name="pie_radius_increment">80dp</dimen>
+</resources>

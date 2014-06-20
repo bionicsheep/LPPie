@@ -74,20 +74,16 @@ public class ColorActivity extends PreferenceActivity{
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-
-		case R.id.action_reset:
+		int itemId = item.getItemId();
+		if (itemId == R.id.action_reset) {
 			((ColorPickerPreference)findPreference("color1")).onColorChanged(0x73000000);
 			((ColorPickerPreference)findPreference("color2")).onColorChanged(0xbfffffff);
 			((ColorPickerPreference)findPreference("color3")).onColorChanged(0xbfffffff);
-			break;
-
-		case android.R.id.home:
+		} else if (itemId == android.R.id.home) {
 			// app icon in action bar clicked; go home
 			Intent intent = new Intent(this, MainActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(intent);
-			break;
 		}
 
 		return true;

@@ -11,11 +11,11 @@ public final class R {
 		public static final int icon = 0x7f02000a;
 	}
 	public static final class id {
-		public static final int color_picker_view = 0x7f0a0001;
-		public static final int hex_val = 0x7f0a0003;
-		public static final int new_color_panel = 0x7f0a0005;
-		public static final int old_color_panel = 0x7f0a0004;
-		public static final int text_hex_wrapper = 0x7f0a0002;
+		public static final int color_picker_view = 0x7f0b0001;
+		public static final int hex_val = 0x7f0b0003;
+		public static final int new_color_panel = 0x7f0b0005;
+		public static final int old_color_panel = 0x7f0b0004;
+		public static final int text_hex_wrapper = 0x7f0b0002;
 	}
 	public static final class integer {
 		public static final int COLOR_BLACK = 0x7f050000;

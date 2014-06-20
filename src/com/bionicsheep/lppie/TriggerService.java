@@ -11,7 +11,6 @@ import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -43,7 +42,6 @@ public class TriggerService extends AccessibilityService{
 
 	Canvas canvas;
 	PieControls pieView;
-	Background backgroundView;
 	SharedPreferences sp;
 	
 	Vibrator vibrate;
@@ -75,7 +73,6 @@ public class TriggerService extends AccessibilityService{
 		pHeight = metrics.heightPixels;
 
 		pieView = new PieControls(this, sp, metrics.widthPixels);
-		backgroundView = new Background(this);
 
 		startTrigger();
 		vibrate = (Vibrator) getSystemService(VIBRATOR_SERVICE);
@@ -109,12 +106,6 @@ public class TriggerService extends AccessibilityService{
 				destruct(1);
 			}else if(event.getAction() == MotionEvent.ACTION_MOVE){
 				pieView.checkForAction(event);
-				dragY = (int) -event.getY();
-				if(scanning && dragY > shadow_threshold){
-					Log.d("pie", "threshold hit");
-					scanning = false;
-					fadeToDark();
-				}
 			}
 			return true;
 		}
@@ -126,28 +117,6 @@ public class TriggerService extends AccessibilityService{
 			wm.removeView(detectorArea);
 		}
 		super.onDestroy();
-	}
-
-	private void fadeToDark(){
-		(new Thread(){
-			int n = 0;
-			public void run(){
-
-				for(n = 0; n < 200; n++){
-					try{
-						runOnUiThread(new Runnable(){
-							@Override
-							public void run() {
-								background.setBackgroundColor(Color.argb(n, 0, 0, 0));
-							}
-						});
-						sleep(3);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}).start();
 	}
 
 	private void startPie(){		
@@ -189,11 +158,7 @@ public class TriggerService extends AccessibilityService{
 		wm.addView(background, bparams);
 		background.setBackgroundColor(Color.argb(0, 0, 0, 0));
 	}
-
-	private void runOnUiThread(Runnable runnable) {
-		handler.post(runnable);
-	}
-
+	
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		// TODO Auto-generated method stub
