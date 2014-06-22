@@ -26,6 +26,10 @@
         </Preference>
 
         <Preference android:title="@string/sizing_link" >
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:targetClass="com.bionicsheep.lppie.SizingActivity"
+                android:targetPackage="com.bionicsheep.lppie" />
         </Preference>
     </PreferenceCategory>
 

@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -41,29 +42,26 @@ public class TriggerService extends AccessibilityService{
 	Toast toast;
 
 	Canvas canvas;
-	PieControls pieView;
+	PieView pieView;
 	SharedPreferences sp;
 	
 	Vibrator vibrate;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		// We want this service to continue running until it is explicitly
-		// stopped, so return sticky.
-		
         Toast toast = Toast.makeText(this, "Pie AutoStarted", Toast.LENGTH_SHORT);
         toast.show();
+        
 		return START_STICKY;
 	}
 
 	@Override
 	public void onCreate(){
-		sp = getSharedPreferences("app_settings", MODE_PRIVATE);
+		sp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		detectorArea = new ImageView(this);
 		background = new ImageView(this);
 
 		handler = new Handler();
-
 		wm = (WindowManager) getSystemService(WINDOW_SERVICE);		
 		wm.getDefaultDisplay().getMetrics(metrics);
 
@@ -72,7 +70,8 @@ public class TriggerService extends AccessibilityService{
 		pWidth = metrics.widthPixels;
 		pHeight = metrics.heightPixels;
 
-		pieView = new PieControls(this, sp, metrics.widthPixels);
+		pieView = new PieView(this);
+		pieView.setSharedPrefs(sp);
 
 		startTrigger();
 		vibrate = (Vibrator) getSystemService(VIBRATOR_SERVICE);
@@ -85,27 +84,27 @@ public class TriggerService extends AccessibilityService{
 				triggered = true;
 				startBackground();
 				startPie();
-				pieView.resetColor();
+				//pieView.resetColor();
 				vibrate.vibrate(5);
 			}else if(event.getAction() == MotionEvent.ACTION_UP){				
-				switch (pieView.checkForAction(event)){
-				case 1:
-					performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
-					break;
-				case 2:
-					performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
-					break;
-				case 3:
-					performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
-					break;
-				}
+//				switch (pieView.checkForAction(event)){
+//				case 1:
+//					performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+//					break;
+//				case 2:
+//					performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME);
+//					break;
+//				case 3:
+//					performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
+//					break;
+//				}
 				vibrate.vibrate(5);
-				pieView.resetColor();
+				//pieView.resetColor();
 				triggered = false;
 				scanning = true;
 				destruct(1);
 			}else if(event.getAction() == MotionEvent.ACTION_MOVE){
-				pieView.checkForAction(event);
+				//pieView.checkForAction(event);
 			}
 			return true;
 		}
@@ -119,7 +118,7 @@ public class TriggerService extends AccessibilityService{
 		super.onDestroy();
 	}
 
-	private void startPie(){		
+	private void startPie(){
 		wm.addView(pieView, bparams);
 	}
 
@@ -176,7 +175,7 @@ public class TriggerService extends AccessibilityService{
 		displayWidth = metrics.widthPixels;
 		displayHeight = metrics.heightPixels;
 		shadow_threshold = displayHeight / 2;
-		pieView.updateDisplayParams(displayWidth, displayHeight);
+		//pieView.updateDisplayParams(displayWidth, displayHeight);
 	}
 	
 	public void onConfigurationChanged(Configuration newConfig){

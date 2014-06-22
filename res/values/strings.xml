@@ -25,5 +25,10 @@
 	     and Recents buttons to function properly. \n \nOnce enabled, Pie will be on all the time until it is 
 	     disabled. The service will start up on boot so there is no need to do this more than once unless 
 	     you disable Pie.</string>
+	<string name="trigger_category">Trigger Sizing</string>
+	<string name="pie_size_category">Pie Sizing</string>
+	<string name="trigger_width_label">Trigger Width (Restart phone to apply)</string>
+	<string name="trigger_height_label">Trigger Height (Restart phone to apply)</string>
+	<string name="pie_sizing_label">Pie Size</string>
 	
 </resources>

@@ -8,14 +8,23 @@
 package com.bionicsheep.lppie;
 
 public final class R {
+    public static final class array {
+        public static final int sizing_factors=0x7f070001;
+        public static final int sizing_strings=0x7f070000;
+    }
     public static final class attr {
     }
     public static final class color {
-        public static final int action_bar=0x7f090000;
+        public static final int action_bar=0x7f0a0000;
     }
     public static final class dimen {
-        public static final int pie_radius_increment=0x7f070001;
-        public static final int pie_radius_start=0x7f070000;
+        public static final int icon_gap=0x7f080004;
+        public static final int pie_gap_width=0x7f080003;
+        public static final int pie_outline_width=0x7f080002;
+        public static final int pie_radius_increment=0x7f080001;
+        public static final int pie_radius_start=0x7f080000;
+        public static final int trigger_height=0x7f080006;
+        public static final int trigger_width=0x7f080005;
     }
     public static final class drawable {
         public static final int detector=0x7f020000;
@@ -32,14 +41,15 @@ public final class R {
         public static final int pie=0x7f02000b;
     }
     public static final class id {
-        public static final int action_reset=0x7f0b0007;
-        public static final int color_picker_view=0x7f0b0001;
-        public static final int hex_val=0x7f0b0003;
-        public static final int main_activity_container=0x7f0b0000;
-        public static final int new_color_panel=0x7f0b0005;
-        public static final int old_color_panel=0x7f0b0004;
-        public static final int service_checkbox=0x7f0b0006;
-        public static final int text_hex_wrapper=0x7f0b0002;
+        public static final int action_reset=0x7f0c0008;
+        public static final int color_picker_view=0x7f0c0001;
+        public static final int hex_val=0x7f0c0003;
+        public static final int main_activity_container=0x7f0c0000;
+        public static final int new_color_panel=0x7f0c0005;
+        public static final int old_color_panel=0x7f0c0004;
+        public static final int service_checkbox=0x7f0c0006;
+        public static final int text_hex_wrapper=0x7f0c0002;
+        public static final int trigger_width_preference=0x7f0c0007;
     }
     public static final class integer {
         public static final int COLOR_BLACK=0x7f050000;
@@ -53,9 +63,10 @@ public final class R {
         public static final int dialog_color_picker=0x7f030003;
         public static final int main_preference=0x7f030004;
         public static final int settings=0x7f030005;
+        public static final int sizing_preference=0x7f030006;
     }
     public static final class menu {
-        public static final int main=0x7f0a0000;
+        public static final int main=0x7f0b0000;
     }
     public static final class string {
         public static final int accessibility_service_description=0x7f06001d;
@@ -85,6 +96,8 @@ public final class R {
         public static final int hello=0x7f060000;
         public static final int notification_link=0x7f060010;
         public static final int per_categ=0x7f060018;
+        public static final int pie_size_category=0x7f06001f;
+        public static final int pie_sizing_label=0x7f060022;
         public static final int pref_appearance_setting=0x7f060011;
         /**  Preferences 
          */
@@ -93,6 +106,9 @@ public final class R {
         public static final int press_color_to_apply=0x7f060003;
         public static final int service_checkbox=0x7f06000f;
         public static final int sizing_link=0x7f06001a;
+        public static final int trigger_category=0x7f06001e;
+        public static final int trigger_height_label=0x7f060021;
+        public static final int trigger_width_label=0x7f060020;
         public static final int upgrade_link=0x7f06001c;
     }
     public static final class style {
@@ -119,10 +135,10 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f080000;
+        public static final int AppBaseTheme=0x7f090000;
         /**  Application theme. 
          */
-        public static final int AppTheme=0x7f080001;
+        public static final int AppTheme=0x7f090001;
     }
     public static final class xml {
         public static final int settings=0x7f040000;

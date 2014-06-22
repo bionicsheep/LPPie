@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/pie_size_category" >
+
+        <ListPreference
+            android:key="pie_size"
+            android:defaultValue="1"
+            android:entries="@array/sizing_strings"
+            android:entryValues="@array/sizing_factors"
+            android:title="@string/pie_sizing_label" >
+        </ListPreference>
+        
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/trigger_category" >
+
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/sizing_strings"
+            android:entryValues="@array/sizing_factors"
+            android:key="trigger_width"
+            android:id="@+id/trigger_width_preference"
+            android:title="@string/trigger_width_label" >
+        </ListPreference>
+
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/sizing_strings"
+            android:entryValues="@array/sizing_factors"
+            android:key="trigger_height"
+            android:title="@string/trigger_height_label" >
+        </ListPreference>
+    </PreferenceCategory>
+
+</PreferenceScreen>

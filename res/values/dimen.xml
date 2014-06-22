@@ -2,4 +2,9 @@
 <resources>
     <dimen name="pie_radius_start">65dp</dimen>
     <dimen name="pie_radius_increment">80dp</dimen>
+    <dimen name="pie_outline_width">1.5dp</dimen>
+    <dimen name="pie_gap_width">3dp</dimen>
+    <dimen name="icon_gap">47dp</dimen>
+    <dimen name="trigger_width">150dp</dimen>
+    <dimen name="trigger_height">5dp</dimen>
 </resources>

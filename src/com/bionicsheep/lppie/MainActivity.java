@@ -10,13 +10,12 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.widget.Toast;
 
 public class MainActivity extends PreferenceActivity {
 
-	SharedPreferences sp;
-	SharedPreferences.Editor editor;
+	public static SharedPreferences sp;
+	public SharedPreferences.Editor editor;
 	Preference service_checkbox;
 	Activity currentActivity = this;
 	Toast toast;
@@ -30,17 +29,6 @@ public class MainActivity extends PreferenceActivity {
 
 		loadValues();
 		initializeObjects();
-		
-		printShiz(); //delete source
-	}
-	
-	private void printShiz(){
-		DisplayMetrics dm = new DisplayMetrics();
-		getWindowManager().getDefaultDisplay().getMetrics(dm);
-		
-		Log.d("Lppie","xdpi: " + dm.xdpi);
-		Log.d("Lppie","ydpi: " + dm.ydpi);
-		Log.d("Lppie","densityDpi: " + dm.densityDpi);
 	}
 
 	@SuppressWarnings("deprecation")

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="sizing_strings">
+        <item name="0.8">Small</item>
+        <item name="1">Normal</item>
+        <item name="1.2">Large</item>
+    </string-array>
+    <string-array name="sizing_factors">
+        <item name="0.8">0.85</item>
+        <item name="1">1</item>
+        <item name="1.2">1.15</item>
+    </string-array>
+
+</resources>
