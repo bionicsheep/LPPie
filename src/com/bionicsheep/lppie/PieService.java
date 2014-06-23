@@ -3,6 +3,7 @@ package com.bionicsheep.lppie;
 import android.accessibilityservice.AccessibilityService;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.Vibrator;
@@ -18,50 +19,53 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.Toast;
 
 public class PieService extends AccessibilityService{
-	
+
 	private SharedPreferences sp;
 	private SharedPreferences cp;
 	private WindowManager wm;
 	private Resources mResources;
-	
+
 	private DisplayMetrics dm;
 	private int mDisplayWidth;
 	private int mDisplayHeight;
-	
+
 	private PieView mPieView;
-	
+
 	private View mTriggerView;
 	private int mTriggerWidth;
 	private int mTriggerHeight;
 	private float mTriggerHeightFactor;
 	private float mTriggerWidthFactor;
-	
+
 	private Vibrator mVibrator;
-	
+
 	private boolean mPieTriggered;
 	private WindowManager.LayoutParams mPieParams;
-	
-	
+
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Toast toast = Toast.makeText(this, "Pie AutoStarted", Toast.LENGTH_SHORT);
-        toast.show();
-		
+		toast.show();
 		return START_STICKY;
 	}
-	
+
 	@Override
 	public void onCreate(){
 		sp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		cp = getSharedPreferences("app_settings", MODE_PRIVATE);
 		
+		initializePie();
+	}
+	
+	private void initializePie(){
 		getDimensions();
 		initializePieResources();
 		initializeTrigger();
 	}
-	
+
 	private void initializePieResources(){
-		mPieView = new PieView(this);
+		mPieView = new PieView(this, this);
 		mPieView.setSharedPrefs(sp);
 		mPieView.setColorPrefs(cp);
 
@@ -73,11 +77,11 @@ public class PieService extends AccessibilityService{
 				PixelFormat.TRANSLUCENT
 				);
 	}
-	
+
 	private void initializeTrigger(){
 		mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 		mTriggerView = new View(this);
-		
+
 		WindowManager.LayoutParams mTriggerParams;
 		mTriggerParams = new WindowManager.LayoutParams(
 				mTriggerWidth,
@@ -86,13 +90,13 @@ public class PieService extends AccessibilityService{
 				WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
 				PixelFormat.TRANSLUCENT
 				);
-		
+
 		mTriggerParams.gravity = Gravity.CENTER | Gravity.BOTTOM;
 		
 		wm.addView(mTriggerView, mTriggerParams);
 		mTriggerView.setOnTouchListener(mTriggerTouchListener);
 	}
-	
+
 	private OnTouchListener mTriggerTouchListener = new OnTouchListener(){
 
 		@Override
@@ -123,55 +127,73 @@ public class PieService extends AccessibilityService{
 			}
 			return false;
 		}
-		
+
 	};
-	
+
 	private void activatePie(){
-		mPieView.resetColor();
 		wm.addView(mPieView, mPieParams);
 		mPieTriggered = true;
 	}
-	
+
 	private void deactivatePie(){
 		if(mPieView != null && mPieTriggered){
 			wm.removeView(mPieView);
 		}
 		mPieTriggered = false;
 	}
-	
+
 	private void getDimensions(){
 		dm = new DisplayMetrics();
 		wm = (WindowManager) getSystemService(WINDOW_SERVICE);
 		wm.getDefaultDisplay().getMetrics(dm);
-		
+
 		mResources = getResources();
 		mDisplayWidth = dm.widthPixels;
 		mDisplayHeight = dm.heightPixels;
-		
+
 		mTriggerHeightFactor = Float.parseFloat(sp.getString("trigger_height", "1"));
 		mTriggerWidthFactor = Float.parseFloat(sp.getString("trigger_width", "1"));
-		
+
 		mTriggerHeight = (int) (mResources.getDimensionPixelSize(R.dimen.trigger_height) * mTriggerHeightFactor);
 		mTriggerWidth = (int) (mResources.getDimensionPixelSize(R.dimen.trigger_width) * mTriggerWidthFactor);
-		
+
 		mPieTriggered = false;
 	}
-	
+
 	@Override
 	public void onAccessibilityEvent(AccessibilityEvent event) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onInterrupt() {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
+	}	
+
+	public void onConfigurationChanged(Configuration newConfig){
+		super.onConfigurationChanged(newConfig);
+		destruct();
 	}
 
+
+	private void destruct(){
+		if(mTriggerView != null && mPieTriggered){
+			wm.removeView(mTriggerView);
+		}
+		if(mPieView != null && mPieTriggered){
+			wm.removeView(mPieView);
+		}
+		initializePie();
+	}
+	
+	public void tickSound(){
+		mPieView.playSoundEffect(android.view.SoundEffectConstants.CLICK);
+	}
 }

@@ -1,5 +1,6 @@
 package com.bionicsheep.lppie;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -22,14 +23,15 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
+@SuppressLint("ViewConstructor")
 public class PieView extends View{
 
 	private Context mContext;
+	private PieService mService;
 	private Resources mResources;
 	private WindowManager mWindowManager;
 	private DisplayMetrics mDisplayMetrics;
@@ -60,6 +62,8 @@ public class PieView extends View{
 	private int mPieOuterRadius;
 	private int mPieInnerRadius;
 	private int mPieIconRadius;
+	
+	private int selectedSlice;
 
 	private Paint outlinePaint;
 	private Paint backButtonPaint;
@@ -88,14 +92,17 @@ public class PieView extends View{
 	//private static final int PIE_BUTTON_COLOR = 0x65000000;
 	private static final int PIE_ICON_COLOR = 0xffffffff;
 
-	public PieView(Context context) {
+	public PieView(Context context, PieService service) {
 		super(context);
 
+		mService = service;
 		mContext = context;
 		mDisplayMetrics = new DisplayMetrics();
 		mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 		mWindowManager.getDefaultDisplay().getMetrics(mDisplayMetrics);
 		mResources = mContext.getResources();
+		
+		selectedSlice = 0;
 		
 		outlinePaint = new Paint();
 		backButtonPaint = new Paint();
@@ -167,7 +174,6 @@ public class PieView extends View{
 	}
 
 	private void setStyle(){
-		Log.d("color"," is " + colorPrefs.getString("p1", "50ffffff"));
 		mPieBackButtonColor = Color.parseColor(colorPrefs.getString("p1", "50ffffff"));
 		mPieHomeButtonColor = Color.parseColor(colorPrefs.getString("p2", "50ffffff"));
 		mPieRecentButtonColor = Color.parseColor(colorPrefs.getString("p3", "50ffffff"));
@@ -228,14 +234,10 @@ public class PieView extends View{
 
 	private void drawOutlines(Canvas canvas){
 		int start = ANGLE_BASE - 180;
-		Log.d("test","slice: " + mSliceWidth + " gap: " + GAP_BASE);
-		Log.d("test","start: " + start);
 		backOutlinePath = drawCurvedPath(mPieInnerRadius, mPieOuterRadius, start, mSliceWidth);
 		start += (mSliceWidth + GAP_BASE);
-		Log.d("test","start: " + start);
 		homeOutlinePath = drawCurvedPath(mPieInnerRadius, mPieOuterRadius, start, mSliceWidth);
 		start += (mSliceWidth + GAP_BASE);
-		Log.d("test","start: " + start);
 		recentOutlinePath = drawCurvedPath(mPieInnerRadius, mPieOuterRadius, start, mSliceWidth);
 
 
@@ -246,14 +248,10 @@ public class PieView extends View{
 
 	private void drawButtons(Canvas canvas){
 		int start = ANGLE_BASE - 180;
-		Log.d("test","slice: " + mSliceWidth + " gap: " + GAP_BASE);
-		Log.d("test","start: " + start);
 		backButtonPath = drawCurvedPath(mPieInnerRadius, mPieOuterRadius, start, mSliceWidth);
 		start += (mSliceWidth + GAP_BASE);
-		Log.d("test","start: " + start);
 		homeButtonPath = drawCurvedPath(mPieInnerRadius, mPieOuterRadius, start, mSliceWidth);
 		start += (mSliceWidth + GAP_BASE);
-		Log.d("test","start: " + start);
 		recentButtonPath = drawCurvedPath(mPieInnerRadius, mPieOuterRadius, start, mSliceWidth);
 
 		canvas.drawPath(backButtonPath, backButtonPaint);
@@ -291,7 +289,6 @@ public class PieView extends View{
 
 		}
 		catch (NameNotFoundException e) {
-			Log.d("Lppie","no navbar resources found");
 			recent = BitmapFactory.decodeResource(getResources(), R.drawable.ic_sysbar_recent);
 			back = BitmapFactory.decodeResource(getResources(), R.drawable.ic_sysbar_back);
 			home = BitmapFactory.decodeResource(getResources(), R.drawable.ic_sysbar_home);		
@@ -342,33 +339,44 @@ public class PieView extends View{
 		double radius = Math.sqrt( x * x + y * y );
 		double angle = Math.toDegrees(Math.acos( x / radius ));
 
-		Log.d("pie","radius: " + radius);
-		Log.d("pie","andle: " + angle);
-		Log.d("pie","x: " + x);
-		Log.d("pie","y: " + y);
-
 		if(radius < mPieOuterRadius && radius > mPieInnerRadius){
 			if(angle < mPieAngle || angle > 180 - mPieAngle){
-				highlight(0);
+				if(selectedSlice != 0){
+					selectedSlice = 0;
+					highlight(0);
+				}
 				return 0;
 			}
 			else if(angle > mPieAngle && angle < (mPieAngle + mSliceWidth + (mPieGap/2))){
 				//recent
-				highlight(3);
+				if(selectedSlice != 3){
+					selectedSlice = 3;
+					highlight(3);
+				}
 				return 3;
 			}
 			else if(angle < (180 - mPieAngle) && angle > (180 - (mPieAngle + mSliceWidth + (mPieGap/2)))){
 				//back
-				highlight(1);
+				if(selectedSlice != 1){
+					selectedSlice = 1;
+					highlight(1);
+				}
 				return 1;
 			}
 			else{
 				//home
-				highlight(2);
+				if(selectedSlice != 2){
+					selectedSlice = 2;
+					highlight(2);
+				}
 				return 2;
 			}
 		}else{
-			highlight(0);
+			if(selectedSlice != 0){
+				selectedSlice = 0;
+				highlight(0);
+				
+			}
 			return 0;
 		}
 	}
@@ -395,11 +403,16 @@ public class PieView extends View{
 		invalidate();
 	}
 	
-	public void resetColor(){
+	private void resetColor(){
 		editor = colorPrefs.edit();
 		editor.putString("p1", colorPrefs.getString("primary_reference", "NULL"));
 		editor.putString("p2", colorPrefs.getString("primary_reference", "NULL"));
 		editor.putString("p3", colorPrefs.getString("primary_reference", "NULL"));
 		editor.commit();
 	}
+	
+	private void tickSound(){
+		mService.tickSound();
+	}
+
 }
