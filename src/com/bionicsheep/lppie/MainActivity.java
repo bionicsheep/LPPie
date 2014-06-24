@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
-import android.util.DisplayMetrics;
 import android.widget.Toast;
 
 public class MainActivity extends PreferenceActivity {

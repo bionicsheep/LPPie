@@ -5,7 +5,7 @@
     
     <string name="pref_service_setting">Service Setting</string>
     <string name="service_checkbox">Enable/Disable Service</string>
-    <string name="notification_link">Notification Service</string>
+    <string name="notification_link">Notification Service (not implemented)</string>
     
     <string name="pref_appearance_setting">Appearance</string>
     <string name="color_link">Color</string>
@@ -15,11 +15,11 @@
     	<string name="color_third">Icon Color</string>
     	<string name="color_fourth">Reset Colors</string>
     	<string name="per_categ">Per App Coloring</string>
-    <string name="behavior_link">Behavior</string>
+    <string name="behavior_link">Behavior (not implemented)</string>
 	<string name="sizing_link">Size and Gravity</string>
 	
 	<string name="full_version_setting">Upgrade to Pro</string>
-	<string name="upgrade_link">Play Store</string>
+	<string name="upgrade_link">Play Store (not implemented)</string>
 	
 	<string name="accessibility_service_description">This service needs to be enabled for the Home, Back,
 	     and Recents buttons to function properly. \n \nOnce enabled, Pie will be on all the time until it is 

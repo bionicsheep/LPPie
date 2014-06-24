@@ -1,10 +1,13 @@
 package com.bionicsheep.lppie;
 
 import android.accessibilityservice.AccessibilityService;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -16,6 +19,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Toast;
 
 public class PieService extends AccessibilityService{
@@ -30,6 +34,7 @@ public class PieService extends AccessibilityService{
 	private int mDisplayHeight;
 
 	private PieView mPieView;
+	private View mBackView;
 
 	private View mTriggerView;
 	private int mTriggerWidth;
@@ -65,9 +70,8 @@ public class PieService extends AccessibilityService{
 	}
 
 	private void initializePieResources(){
-		mPieView = new PieView(this, this);
-		mPieView.setSharedPrefs(sp);
-		mPieView.setColorPrefs(cp);
+		mPieView = new PieView(this, this, cp, sp);
+		mBackView = new View(this);
 
 		mPieParams = new WindowManager.LayoutParams(
 				mDisplayWidth,
@@ -122,6 +126,7 @@ public class PieService extends AccessibilityService{
 					performGlobalAction(AccessibilityService.GLOBAL_ACTION_RECENTS);
 					break;
 				}
+				mPieView.resetColor();
 				deactivatePie();
 				mVibrator.vibrate(5);
 			}
@@ -131,12 +136,15 @@ public class PieService extends AccessibilityService{
 	};
 
 	private void activatePie(){
+		fadeBackground();
+		wm.addView(mBackView, mPieParams);
 		wm.addView(mPieView, mPieParams);
 		mPieTriggered = true;
 	}
 
 	private void deactivatePie(){
 		if(mPieView != null && mPieTriggered){
+			wm.removeView(mBackView);
 			wm.removeView(mPieView);
 		}
 		mPieTriggered = false;
@@ -191,6 +199,13 @@ public class PieService extends AccessibilityService{
 			wm.removeView(mPieView);
 		}
 		initializePie();
+	}
+	
+	private void fadeBackground(){
+		ObjectAnimator colorFade = ObjectAnimator.ofObject(mBackView, "backgroundColor", new ArgbEvaluator(), 0x00000000, 0xbb000000);
+		colorFade.setInterpolator(new AccelerateDecelerateInterpolator());
+		colorFade.setDuration(1000);
+		colorFade.start();
 	}
 	
 	public void tickSound(){

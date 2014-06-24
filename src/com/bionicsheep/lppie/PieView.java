@@ -92,8 +92,11 @@ public class PieView extends View{
 	//private static final int PIE_BUTTON_COLOR = 0x65000000;
 	private static final int PIE_ICON_COLOR = 0xffffffff;
 
-	public PieView(Context context, PieService service) {
+	public PieView(Context context, PieService service, SharedPreferences cP, SharedPreferences sP) {
 		super(context);
+		
+		sharedPrefs = sP;
+		colorPrefs = cP;
 
 		mService = service;
 		mContext = context;
@@ -109,44 +112,23 @@ public class PieView extends View{
 		homeButtonPaint = new Paint();
 		recentButtonPaint = new Paint();
 		iconPaint = new Paint();
+		
+		getDimensions();
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas){
 		mCanvas = canvas;
-		getDimensions();
+		getCanvasDimensions();
 		showPie(canvas);
 	}
-
-	public void setSharedPrefs(SharedPreferences sp){
-		sharedPrefs = sp;
-	}
 	
-	public void setColorPrefs(SharedPreferences sp){
-		colorPrefs = sp;
-	}
-
-	private void getDimensions(){
-		mPieSize = SIZE_BASE; //for now
-		mPieAngle = ANGLE_BASE; //for now
-		mPieGap = GAP_BASE; //for now
-		mGravity = GRAVITY_BASE; //for now
-		mSliceWidth = SLICE_WIDTH;
-
+	private void getCanvasDimensions(){
 		mCenter = new Point(0,0);
-
-		Point outSize = new Point(0,0);
-		mWindowManager.getDefaultDisplay().getSize(outSize);
-
+		
 		mDisplayWidth = mCanvas.getWidth();
 		mDisplayHeight = mCanvas.getHeight();
-
-		mPieScalingFactor = Float.parseFloat(sharedPrefs.getString("pie_size", "1"));
-
-		mPieInnerRadius = (int) (mResources.getDimensionPixelSize(R.dimen.pie_radius_start) * mPieSize * mPieScalingFactor);
-		mPieOuterRadius = (int) (mPieInnerRadius + mResources.getDimensionPixelSize(R.dimen.pie_radius_increment) * mPieSize * mPieScalingFactor);
-		mPieIconRadius = (int) (mResources.getDimensionPixelSize(R.dimen.icon_gap) + mPieInnerRadius * mPieScalingFactor);
-
+		
 		switch(mGravity){
 		//bottom
 		case 0:
@@ -169,8 +151,41 @@ public class PieView extends View{
 			mCenter.y = mDisplayHeight / 2;
 			break;
 		}
-
+		
 		setStyle();
+	}
+
+	private void getDimensions(){
+		mPieSize = SIZE_BASE; //for now
+		mPieAngle = ANGLE_BASE; //for now
+		mPieGap = GAP_BASE; //for now
+		mGravity = GRAVITY_BASE; //for now
+		mSliceWidth = SLICE_WIDTH;
+
+		mPieScalingFactor = Float.parseFloat(sharedPrefs.getString("pie_size", "1"));
+
+		mPieInnerRadius = (int) (mResources.getDimensionPixelSize(R.dimen.pie_radius_start) * mPieSize * mPieScalingFactor);
+		mPieOuterRadius = (int) (mPieInnerRadius + mResources.getDimensionPixelSize(R.dimen.pie_radius_increment) * mPieSize * mPieScalingFactor);
+		mPieIconRadius = (int) (mResources.getDimensionPixelSize(R.dimen.icon_gap) + mPieInnerRadius * mPieScalingFactor);
+
+		initializeStyle();
+	}
+	
+	private void initializeStyle(){
+		outlinePaint.setAntiAlias(true);
+		outlinePaint.setStyle(Style.STROKE);
+		outlinePaint.setStrokeWidth(mResources.getDimensionPixelSize(R.dimen.pie_outline_width));
+		
+		backButtonPaint.setAntiAlias(true);
+		backButtonPaint.setStyle(Style.FILL);
+		
+		homeButtonPaint.setAntiAlias(true);
+		homeButtonPaint.setStyle(Style.FILL);
+		
+		recentButtonPaint.setAntiAlias(true);
+		recentButtonPaint.setStyle(Style.FILL);
+		
+		iconPaint.setAntiAlias(true);
 	}
 
 	private void setStyle(){
@@ -181,24 +196,11 @@ public class PieView extends View{
 		mPieIconColor = Color.parseColor(colorPrefs.getString("tertiary_reference", "#FFFFFFFF"));
 		
 		outlinePaint.setColor(mPieOutlineColor);
-		outlinePaint.setAntiAlias(true);
-		outlinePaint.setStyle(Style.STROKE);
-		outlinePaint.setStrokeWidth(mResources.getDimensionPixelSize(R.dimen.pie_outline_width));
-
 		backButtonPaint.setColor(mPieBackButtonColor);
-		backButtonPaint.setAntiAlias(true);
-		backButtonPaint.setStyle(Style.FILL);
-
 		homeButtonPaint.setColor(mPieHomeButtonColor);
-		homeButtonPaint.setAntiAlias(true);
-		homeButtonPaint.setStyle(Style.FILL);
-
 		recentButtonPaint.setColor(mPieRecentButtonColor);
-		recentButtonPaint.setAntiAlias(true);
-		recentButtonPaint.setStyle(Style.FILL);
-
-		iconPaint.setColor(PIE_ICON_COLOR);
-		iconPaint.setAntiAlias(true);
+	
+		
 		ColorFilter iconFilter = new PorterDuffColorFilter(PIE_ICON_COLOR, PorterDuff.Mode.MULTIPLY);
 		iconPaint.setColorFilter(iconFilter);
 		filter = new PorterDuffColorFilter(mPieIconColor, PorterDuff.Mode.MULTIPLY);
@@ -216,10 +218,6 @@ public class PieView extends View{
 		//drawInfoLine2(canvas);
 		//drawInfoLine3(canvas);
 		//drawChevrons(canvas);
-	}
-
-	public void hidePie(){
-
 	}
 
 	private Path drawCurvedPath(int innerRadius, int outerRadius, float start, float sweep){
@@ -352,6 +350,7 @@ public class PieView extends View{
 				if(selectedSlice != 3){
 					selectedSlice = 3;
 					highlight(3);
+					tickSound();
 				}
 				return 3;
 			}
@@ -360,6 +359,7 @@ public class PieView extends View{
 				if(selectedSlice != 1){
 					selectedSlice = 1;
 					highlight(1);
+					tickSound();
 				}
 				return 1;
 			}
@@ -368,6 +368,7 @@ public class PieView extends View{
 				if(selectedSlice != 2){
 					selectedSlice = 2;
 					highlight(2);
+					tickSound();
 				}
 				return 2;
 			}
@@ -403,7 +404,7 @@ public class PieView extends View{
 		invalidate();
 	}
 	
-	private void resetColor(){
+	public void resetColor(){
 		editor = colorPrefs.edit();
 		editor.putString("p1", colorPrefs.getString("primary_reference", "NULL"));
 		editor.putString("p2", colorPrefs.getString("primary_reference", "NULL"));
