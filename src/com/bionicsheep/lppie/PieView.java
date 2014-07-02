@@ -23,6 +23,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -231,6 +232,7 @@ public class PieView extends View{
 	}
 
 	private void drawOutlines(Canvas canvas){
+		Log.d("is hardware ", " accelerated " + canvas.isHardwareAccelerated());
 		int start = ANGLE_BASE - 180;
 		backOutlinePath = drawCurvedPath(mPieInnerRadius, mPieOuterRadius, start, mSliceWidth);
 		start += (mSliceWidth + GAP_BASE);
@@ -401,7 +403,7 @@ public class PieView extends View{
 		}
 
 		editor.commit();
-		invalidate();
+		this.invalidate(0, mDisplayHeight - mPieOuterRadius, mDisplayWidth, mDisplayHeight);
 	}
 	
 	public void resetColor(){

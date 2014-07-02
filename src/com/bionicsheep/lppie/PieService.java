@@ -1,13 +1,10 @@
 package com.bionicsheep.lppie;
 
 import android.accessibilityservice.AccessibilityService;
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -19,7 +16,6 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Toast;
 
 public class PieService extends AccessibilityService{
@@ -105,6 +101,7 @@ public class PieService extends AccessibilityService{
 
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
+			v.performClick();
 			if(event.getAction() == MotionEvent.ACTION_DOWN){
 				activatePie();
 			}
@@ -136,7 +133,7 @@ public class PieService extends AccessibilityService{
 	};
 
 	private void activatePie(){
-		fadeBackground();
+		//fadeBackground();
 		wm.addView(mBackView, mPieParams);
 		wm.addView(mPieView, mPieParams);
 		mPieTriggered = true;
@@ -199,13 +196,6 @@ public class PieService extends AccessibilityService{
 			wm.removeView(mPieView);
 		}
 		initializePie();
-	}
-	
-	private void fadeBackground(){
-		ObjectAnimator colorFade = ObjectAnimator.ofObject(mBackView, "backgroundColor", new ArgbEvaluator(), 0x00000000, 0xbb000000);
-		colorFade.setInterpolator(new AccelerateDecelerateInterpolator());
-		colorFade.setDuration(1000);
-		colorFade.start();
 	}
 	
 	public void tickSound(){
